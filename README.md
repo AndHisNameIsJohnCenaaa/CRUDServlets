@@ -24,4 +24,4 @@ GET  http://localhost:8080/tasks?employeeId={id} - получить все за�
 POST http://localhost:8080/tasks - добавить новое задание\
 DELETE http://localhost:8080/tasks/{id} - удалить задание по id\
 PUT  http://localhost:8080/tasks/{id}/company/{id} - назначить компанию заданию\
-PUT  http://localhost:8080/tasks/{id}/employee/{id} - назначить работнику задание\
+PUT  http://localhost:8080/tasks/{id}/employee/{id} - назначить работнику задание
