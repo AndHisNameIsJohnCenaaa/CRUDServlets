@@ -35,7 +35,7 @@ public class JdbcCompanyRepository implements CompanyRepository {
 			ps.setString(2, company.getEmail());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 			return false;
 		}
 	}
@@ -51,7 +51,7 @@ public class JdbcCompanyRepository implements CompanyRepository {
 			ps.setInt(3, company.getId());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 			return false;
 		}
 	}
@@ -65,7 +65,7 @@ public class JdbcCompanyRepository implements CompanyRepository {
 			ps.setInt(1, id);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 			return false;
 		}
 	}
@@ -86,7 +86,7 @@ public class JdbcCompanyRepository implements CompanyRepository {
 				return company;
 			}
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 			return null;
 		}
 		return null;
@@ -109,7 +109,7 @@ public class JdbcCompanyRepository implements CompanyRepository {
 			}
 			return companies;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}

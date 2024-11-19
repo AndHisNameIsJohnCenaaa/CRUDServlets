@@ -34,7 +34,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			ps.setString(2, employee.getTelegramId());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -50,7 +50,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			ps.setInt(3, employee.getId());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -64,7 +64,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			ps.setInt(1, id);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -85,7 +85,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 				return employee;
 			}
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
@@ -102,7 +102,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			ResultSet rs = ps.executeQuery();
 			return getEmployees(rs);
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
@@ -116,7 +116,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			ResultSet rs = ps.executeQuery();
 			return getEmployees(rs);
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
@@ -133,7 +133,7 @@ public class JdbcEmployeeRepository implements EmployeeRepository {
 			}
 			return employees;
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}

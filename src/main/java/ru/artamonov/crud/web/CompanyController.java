@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @WebServlet("/companies/*")
@@ -36,22 +35,23 @@ public class CompanyController extends HttpServlet {
 		String pathInfo = req.getPathInfo();
 		if (pathInfo == null) {
 			List<Company> companies = repository.getAll();
-			logger.info(companies.toString());
+			logger.info("GET companies: {}", companies);
 			ServletUtil.respond(companies, resp);
 		}
 		else {
+			int id = Integer.parseInt(pathInfo.substring(1));
 			try {
-				int id = Integer.parseInt(pathInfo.substring(1));
 				Company company = repository.get(id);
+				logger.info("GET company: {}", company);
 				if (company == null) {
 					throw new NotFoundException("Company not found");
 				}
-				logger.info(company.toString());
 				ServletUtil.respond(company, resp);
 			} catch (NotFoundException e) {
 				resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 				ServletUtil.respond(error, resp);
+				logger.info("Not found company with id: {}", id);
 			}
 		}
 	}
@@ -62,14 +62,12 @@ public class CompanyController extends HttpServlet {
 		try {
 			Company company = ServletUtil.expect(Company.class, req);
 			ServletUtil.respond(repository.save(company), resp);
+			logger.info("SAVE company: {}", company);
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
-		} catch (NotFoundException e) {
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
-			ServletUtil.respond(error, resp);
+			logger.info("SAVE bad Request: {}", e.getMessage());
 		}
 	}
 
@@ -84,8 +82,9 @@ public class CompanyController extends HttpServlet {
 				Company company = ServletUtil.expect(Company.class, req);
 				company.setId(Integer.parseInt(pathInfo.substring(1)));
 				if(!repository.update(company)) {
-					throw new NotFoundException("Company not found");
+					throw new NotFoundException("Company not found with id: " + company.getId());
 				}
+				logger.info("UPDATE company: {}", company);
 			}
 			ServletUtil.respond(HttpServletResponse.SC_NO_CONTENT, resp);
 
@@ -93,10 +92,12 @@ public class CompanyController extends HttpServlet {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("UPDATE bad Request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("UPDATE not found: {}", e.getMessage());
 		}
 	}
 
@@ -111,15 +112,18 @@ public class CompanyController extends HttpServlet {
 				if (!repository.delete(id)) {
 					throw new NotFoundException("Company not found");
 				}
+				logger.info("DELETE company with id: {}", id);
 			}
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE bad Request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE not found: {}", e.getMessage());
 		}
 	}
 }

@@ -2,7 +2,6 @@ package ru.artamonov.crud.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.artamonov.crud.model.Employee;
 import ru.artamonov.crud.model.Task;
 import ru.artamonov.crud.repository.TaskRepository;
 import ru.artamonov.crud.repository.jdbc.JdbcTaskRepository;
@@ -44,23 +43,26 @@ public class TaskController extends HttpServlet {
 			try {
 				int id = getIdBy(req, "companyId");
 				tasks = repository.getByCompanyId(id);
+				logger.info("GET tasks by company id {}: {}", id, tasks);
 			} catch (NullPointerException e) {
 				try {
 					int id = getIdBy(req, "employeeId");
 					tasks = repository.getByEmployeeId(id);
+					logger.info("GET tasks by employee id {}: {}", id, tasks);
 				} catch (NullPointerException e2) {
 					tasks = repository.getAll();
+					logger.info("GET tasks all: {}", tasks);
 				}
 			}
 			if (tasks == null) {
 				throw new NotFoundException("Tasks not found");
 			}
-			logger.info(tasks.toString());
 			ServletUtil.respond(tasks, resp);
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("GET not found: {}", e.getMessage());
 		}
 	}
 
@@ -71,14 +73,17 @@ public class TaskController extends HttpServlet {
 		try {
 			Task task = ServletUtil.expect(Task.class, req);
 			ServletUtil.respond(repository.save(task), resp);
+			logger.info("SAVE task: {}", task);
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("SAVE bad request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("SAVE not found: {}", e.getMessage());
 		}
 	}
 
@@ -92,17 +97,20 @@ public class TaskController extends HttpServlet {
 				int companyId = Integer.parseInt(parts[parts.length - 1]);
 				int taskId = Integer.parseInt(parts[1]);
 				repository.assignTaskToCompany(taskId, companyId);
+				logger.info("ASSIGN task id{} to company id{}", taskId, companyId);
 			} else if (pathInfo.contains("/employee/")) {
 				String[] parts = pathInfo.split("/");
 				int employeeId = Integer.parseInt(parts[parts.length - 1]);
 				int taskId = Integer.parseInt(parts[1]);
 				repository.assignTaskToEmployee(taskId, employeeId);
+				logger.info("ASSIGN task id{} to employee id{}", taskId, employeeId);
 			}
 
 		} catch (NullPointerException | NumberFormatException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("Bad request: {}", e.getMessage());
 		}
 	}
 
@@ -117,15 +125,18 @@ public class TaskController extends HttpServlet {
 				if (!repository.delete(id)) {
 					throw new NotFoundException("Task not found");
 				}
+				logger.info("DELETE task id{}", id);
 			}
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE bad request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE not found: {}", e.getMessage());
 		}
 	}
 }

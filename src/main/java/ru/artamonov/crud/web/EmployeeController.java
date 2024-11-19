@@ -2,7 +2,6 @@ package ru.artamonov.crud.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.artamonov.crud.model.Company;
 import ru.artamonov.crud.model.Employee;
 import ru.artamonov.crud.repository.EmployeeRepository;
 import ru.artamonov.crud.repository.jdbc.JdbcEmployeeRepository;
@@ -36,14 +35,14 @@ public class EmployeeController extends HttpServlet {
 		String pathInfo = req.getPathInfo();
 		if (pathInfo == null) {
 			List<Employee> employees = repository.getAll();
-			logger.info(employees.toString());
 			ServletUtil.respond(employees, resp);
+			logger.info("GET employees: {}", employees);
 		}
 		else {
 			int id = Integer.parseInt(pathInfo.substring(1));
 			Employee employee = repository.get(id);
-			logger.info(employee.toString());
 			ServletUtil.respond(employee, resp);
+			logger.info("GET employee {}", employee);
 		}
 	}
 
@@ -53,14 +52,12 @@ public class EmployeeController extends HttpServlet {
 		try {
 			Employee employee = ServletUtil.expect(Employee.class, req);
 			ServletUtil.respond(repository.save(employee), resp);
+			logger.info("SAVE employee {}", employee);
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
-		} catch (NotFoundException e) {
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
-			ServletUtil.respond(error, resp);
+			logger.info("SAVE bad Request: {}", e.getMessage());
 		}
 	}
 
@@ -77,6 +74,7 @@ public class EmployeeController extends HttpServlet {
 				if(!repository.update(employee)) {
 					throw new NotFoundException("Employee not found");
 				}
+				logger.info("UPDATE employee {}", employee);
 			}
 			ServletUtil.respond(HttpServletResponse.SC_NO_CONTENT, resp);
 
@@ -84,10 +82,12 @@ public class EmployeeController extends HttpServlet {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("SAVE bad Request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("SAVE not found: {}", e.getMessage());
 		}
 	}
 
@@ -103,15 +103,18 @@ public class EmployeeController extends HttpServlet {
 				if (!repository.delete(id)) {
 					throw new NotFoundException("Employee not found");
 				}
+				logger.info("DELETE employee with id: {}", id);
 			}
 		} catch (BadRequestException e) {
 			resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			ErrorResource error = new ErrorResource("Bad Request", e.getMessage(), HttpServletResponse.SC_BAD_REQUEST);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE bad Request: {}", e.getMessage());
 		} catch (NotFoundException e) {
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			ErrorResource error = new ErrorResource("Not found", e.getMessage(), HttpServletResponse.SC_NOT_FOUND);
 			ServletUtil.respond(error, resp);
+			logger.info("DELETE not found: {}", e.getMessage());
 		}
 	}
 }

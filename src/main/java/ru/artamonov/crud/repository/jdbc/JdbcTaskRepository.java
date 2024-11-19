@@ -34,7 +34,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			ps.setString(2, task.getDescription());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -49,7 +49,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			ps.setInt(2, taskId);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -64,7 +64,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			ps.setInt(2, employeeId);
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -79,7 +79,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			return ps.executeUpdate() > 0;
 		}
 		catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return false;
 	}
@@ -102,7 +102,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			}
 			return task;
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
@@ -115,7 +115,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			ResultSet rs = ps.executeQuery();
 			return getTasks(rs);
 		} catch (SQLException e) {
-			logger.info(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
@@ -156,7 +156,7 @@ public class JdbcTaskRepository implements TaskRepository {
 			ResultSet rs = ps.executeQuery();
 			return getTasks(rs);
 		} catch (SQLException e) {
-			logger.error(e.getMessage());
+			logger.error("SQL exception", e);
 		}
 		return null;
 	}
